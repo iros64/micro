@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заголовок статьи</title>
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+    <article class="article">
+        <header class="article-header">
+            <form method="POST" action="/two" class="custom-button">  
+                <button>Информация</button> 
+            </form>
+            <form method="POST" action="/" class="custom-button">  
+                <button>Главная страница</button>
+            </form>
+            
+            <h2 class="article-title">Случайный вопрос</h2>
+           
+            <h3>{{ question }}</h3>
+            <form method="POST" action="/arduino" class="opros_button"> 
+                <button type="submit" name="num_but" value="1">
+                    {{ answer0 }}
+                </button>  
+            </form>
+            <form method="POST" action="/arduino" class="opros_button">
+                <button type="submit" name="num_but" value="2">
+                    {{ answer1 }}
+                </button>  
+            </form>
+            <form method="POST" action="/arduino" class="opros_button">
+                <button type="submit" name="num_but" value="3">
+                    {{ answer2 }}
+                </button>  
+            </form>
+            <form method="POST" action="/arduino" class="opros_button">
+                <button type="submit" name="num_but" value="4">
+                    {{ answer3 }}
+                </button>  
+            </form>
+
+        </header>
+        <div class="article-content">
+
+        </div>
+        <footer class="article-footer">
+            <p class="share-links">Поделиться: <a href="#">ВКонтакте</a> | <a href="#">Telegram</a></p>
+        </footer>
+    </article>
+</body>
+</html>
