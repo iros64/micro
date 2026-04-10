@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request, url_for
-import classdef
 from classdef import end, after_end
 import random
 import os
 import uuid
 from werkzeug.utils import secure_filename
-
+#width="300" height=auto
+#width="338" height=auto 
 app = Flask(__name__)
 
 UPLOAD_FOLDER = 'static/uploads'
@@ -131,10 +131,6 @@ def clicked1():
 def clicked2():
     return render_template('two.html')
 
-
-@app.route('/a', methods=['POST'])
-def clicked3():
-    return render_template('a.html')
 
 
 @app.route('/help', methods=['POST'])
