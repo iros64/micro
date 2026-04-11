@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результат поиска по фото</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* ── AI-описание ───────────────────────────────────────── */
+        .ai-block {
+            background: var(--surface, #2c3340);
+            border: 0.5px solid var(--border-mid, rgba(126,184,212,0.2));
+            border-left: 3px solid var(--accent, #7eb8d4);
+            border-radius: 0 12px 12px 0;
+            padding: 18px 22px;
+            margin-bottom: 28px;
+            text-align: left;
+        }
+
+        .ai-block-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent, #7eb8d4);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .ai-block-label::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent, #7eb8d4);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50%       { opacity: 0.4; transform: scale(0.7); }
+        }
+
+        .ai-block-text {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--ink-mid, #c8beaa);
+            margin: 0;
+        }
+
+        /* ── Ошибка AI ─────────────────────────────────────────── */
+        .ai-error {
+            background: rgba(200, 80, 80, 0.08);
+            border: 0.5px solid rgba(200, 80, 80, 0.3);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 24px;
+            font-size: 0.88rem;
+            color: #e08080;
+            text-align: left;
+        }
+
+        /* ── Разделитель перед поисковиками ────────────────────── */
+        .section-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ink-light, #7a7468);
+            margin-bottom: 14px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="result-container">
+        <h1>📸 Анализ фото</h1>
+        <p class="subtitle">AI описал изображение и подобрал поисковики</p>
+
+        <img class="uploaded-photo" src="{{ image_url }}" alt="Загруженное фото" id="uploadedImg">
+
+        <!-- AI-описание -->
+        {% if description %}
+        <div class="ai-block">
+            <div class="ai-block-label">Описание от AI</div>
+            <p class="ai-block-text">{{ description }}</p>
+        </div>
+        {% elif ai_error %}
+        <div class="ai-error">⚠️ {{ ai_error }}</div>
+        {% endif %}
+
+        <!-- Поиск похожих -->
+        <div class="section-label">Найти похожие в интернете</div>
+        <div class="engines-grid">
+            <a class="engine-btn btn-google" id="googleLensBtn" href="#" target="_blank" rel="noopener">
+                <span class="emoji">🔍</span> Google Lens
+            </a>
+            <a class="engine-btn btn-yandex" id="yandexBtn" href="#" target="_blank" rel="noopener">
+                <span class="emoji">🅨</span> Яндекс
+            </a>
+            <a class="engine-btn btn-bing" id="bingBtn" href="https://www.bing.com/visualsearch" target="_blank" rel="noopener">
+                <span class="emoji">🔷</span> Bing Visual
+            </a>
+            <a class="engine-btn btn-tineye" id="tineyeBtn" href="#" target="_blank" rel="noopener">
+                <span class="emoji">👁</span> TinEye
+            </a>
+        </div>
+
+        <div class="btn-row">
+            <a class="btn-again" href="/photo">⟵ Загрузить другое</a>
+            <a class="btn-home" href="/">На главную</a>
+        </div>
+
+        <p class="note" id="note">
+            Нажмите на поисковик — откроется новая вкладка.
+        </p>
+    </div>
+
+    <script>
+        const absoluteImageUrl = window.location.origin + '{{ image_url }}';
+
+        document.getElementById('googleLensBtn').href =
+            `https://lens.google.com/uploadbyurl?url=${encodeURIComponent(absoluteImageUrl)}`;
+        document.getElementById('yandexBtn').href =
+            `https://yandex.ru/images/search?rpt=imageview&url=${encodeURIComponent(absoluteImageUrl)}`;
+        document.getElementById('tineyeBtn').href =
+            `https://tineye.com/search?url=${encodeURIComponent(absoluteImageUrl)}`;
+
+        const isLocal = ['localhost','127.0.0.1'].includes(window.location.hostname);
+        if (isLocal) {
+            document.getElementById('note').innerHTML =
+                '⚠️ <b>Локальный сервер:</b> фото скачается автоматически при клике — ' +
+                'затем загрузите его вручную на странице поисковика.';
+
+            ['googleLensBtn','yandexBtn','bingBtn','tineyeBtn'].forEach(id => {
+                document.getElementById(id).addEventListener('click', e => {
+                    e.preventDefault();
+                    const a = document.createElement('a');
+                    a.href = '{{ image_url }}';
+                    a.download = '{{ filename }}';
+                    a.click();
+                    const targets = {
+                        googleLensBtn: 'https://lens.google.com/',
+                        yandexBtn:     'https://yandex.ru/images/',
+                        bingBtn:       'https://www.bing.com/visualsearch',
+                        tineyeBtn:     'https://tineye.com/'
+                    };
+                    setTimeout(() => window.open(targets[id], '_blank'), 300);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
